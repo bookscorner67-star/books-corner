@@ -1,9 +1,9 @@
 [
   {
     "title": "Introduction to Arduino",
-    "author": "Nabeel ahmed",
-    "image": "images/arduino.jpg",
+    "author": "Arduino",
+    "image": "https://via.placeholder.com/150",
     "file": "books/arduino.pdf",
-    "description": "A beginner guide to Arduino and basic electronics projects."
+    "description": "Beginner guide to Arduino."
   }
 ]
