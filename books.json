@@ -1,8 +1,8 @@
 [
   {
-    "title": "aurdino book expanded version",
-    "author": "nabeel ahmed",
-    "file": "books/arduino-book.pdf",
+    "title": "Arduino Book Expanded Version",
+    "author": "Nabeel Ahmed",
+    "file": "arduino-book.pdf",
     "description": "Beginner guide to Arduino."
   }
 ]
