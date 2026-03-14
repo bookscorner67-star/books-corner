@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Books Corner Admin</title>
+<style>
+body{
+font-family:Arial;
+background:#111;
+color:white;
+text-align:center;
+}
+
+input, textarea{
+width:300px;
+padding:10px;
+margin:10px;
+}
+
+button{
+padding:10px 20px;
+background:green;
+color:white;
+border:none;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Books Corner Admin Panel</h1>
+
+<input id="title" placeholder="Book Title"><br>
+<input id="author" placeholder="Author"><br>
+<input id="file" placeholder="Google Drive Preview Link"><br>
+<textarea id="desc" placeholder="Description"></textarea><br>
+
+<button onclick="generate()">Generate JSON</button>
+
+<h3>Copy this and paste into books.json</h3>
+
+<pre id="output"></pre>
+
+<script>
+function generate(){
+
+let title=document.getElementById("title").value;
+let author=document.getElementById("author").value;
+let file=document.getElementById("file").value;
+let desc=document.getElementById("desc").value;
+
+let json=
+`{
+"title":"${title}",
+"author":"${author}",
+"file":"${file}",
+"description":"${desc}"
+},`;
+
+document.getElementById("output").innerText=json;
+
+}
+</script>
+
+</body>
+</html>
