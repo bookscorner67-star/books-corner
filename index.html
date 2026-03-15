@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <title>BooksCorner</title>
 
 <style>
+
 body{
 font-family:Arial;
 background:#f2f2f2;
@@ -28,6 +30,7 @@ box-shadow:0 0 10px rgba(0,0,0,0.2);
 
 button{
 padding:10px 15px;
+margin:5px;
 background:#007bff;
 color:white;
 border:none;
@@ -45,6 +48,7 @@ background:#222;
 color:white;
 padding:20px;
 }
+
 </style>
 
 </head>
@@ -54,6 +58,7 @@ padding:20px;
 <header>
 📚 BooksCorner Library
 </header>
+
 
 <h2>Categories</h2>
 
@@ -66,50 +71,47 @@ padding:20px;
 <button onclick="filterBooks('Electronics')">Electronics</button>
 <button onclick="filterBooks('All')">All</button>
 
+
 <h2>Available Books</h2>
 
 <div id="library"></div>
+
 
 <footer>
 If help needed contact:<br>
 <b>bookscorner67@gmail.com</b>
 </footer>
 
+
 <script>
+
 let allBooks = [];
+
 
 fetch("books.json")
 .then(res => res.json())
 .then(data => {
+
 allBooks = data;
 displayBooks(data);
+
 });
 
-function filterBooks(category){
 
-if(category == "All"){
-displayBooks(allBooks);
-return;
-}
-
-let filtered = allBooks.filter(b => b.category == category);
-
-displayBooks(filtered);
-
-}
-
-  fetch("books.json")
-.then(res => res.json())
-.then(data => {
+function displayBooks(books){
 
 let area = document.getElementById("library");
 
-data.forEach(book => {
+area.innerHTML = "";
+
+books.forEach(book => {
 
 area.innerHTML += `
 <div class="book">
 
 <h3>${book.title}</h3>
+
+<p><b>Category:</b> ${book.category}</p>
 
 <a href="${book.file}" target="_blank">
 <button>Read Online</button>
@@ -124,9 +126,25 @@ area.innerHTML += `
 
 });
 
-});
+}
+
+
+
+function filterBooks(category){
+
+if(category === "All"){
+displayBooks(allBooks);
+return;
+}
+
+let filtered = allBooks.filter(book => book.category === category);
+
+displayBooks(filtered);
+
+}
 
 </script>
+
 
 </body>
 </html>
