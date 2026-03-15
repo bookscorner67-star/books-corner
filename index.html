@@ -76,8 +76,29 @@ If help needed contact:<br>
 </footer>
 
 <script>
+let allBooks = [];
 
 fetch("books.json")
+.then(res => res.json())
+.then(data => {
+allBooks = data;
+displayBooks(data);
+});
+
+function filterBooks(category){
+
+if(category == "All"){
+displayBooks(allBooks);
+return;
+}
+
+let filtered = allBooks.filter(b => b.category == category);
+
+displayBooks(filtered);
+
+}
+
+  fetch("books.json")
 .then(res => res.json())
 .then(data => {
 
