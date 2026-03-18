@@ -20,7 +20,7 @@
     .admin-box{
       background:white;
       width:80%;
-      max-width:550px;
+      max-width:600px;
       margin:30px auto;
       padding:25px;
       border-radius:12px;
@@ -63,9 +63,9 @@
 <header>📚 BooksCorner Admin Panel</header>
 
 <div class="admin-box">
-  <h2>Convert Google Drive Code to Preview Link</h2>
-  <input id="fileCode" placeholder="Paste only Google Drive file code">
-  <button onclick="makePreview()">Make Preview Link</button>
+  <h2>Convert Google Drive Link to Preview Link</h2>
+  <input id="driveLink" placeholder="Paste full Google Drive link here">
+  <button onclick="makePreview()">Convert to Preview</button>
   <div id="previewLink"></div>
 
   <hr style="margin:25px 0;">
@@ -74,7 +74,7 @@
   <input id="title" placeholder="Book Title">
   <input id="author" placeholder="Author">
   <input id="category" placeholder="Category">
-  <input id="link" placeholder="Paste preview link here">
+  <input id="link" placeholder="Preview link will come here">
   <textarea id="desc" placeholder="Description"></textarea>
   <button onclick="addBook()">Generate Book Code</button>
 
@@ -83,10 +83,18 @@
 
 <script>
 function makePreview(){
-  let code = document.getElementById("fileCode").value.trim();
-  let preview = "https://drive.google.com/file/d/" + code + "/preview";
-  document.getElementById("previewLink").innerText = preview;
-  document.getElementById("link").value = preview;
+  let fullLink = document.getElementById("driveLink").value.trim();
+
+  let match = fullLink.match(/\/d\/([a-zA-Z0-9_-]+)/);
+
+  if(match){
+    let fileId = match[1];
+    let preview = "https://drive.google.com/file/d/" + fileId + "/preview";
+    document.getElementById("previewLink").innerText = preview;
+    document.getElementById("link").value = preview;
+  } else {
+    document.getElementById("previewLink").innerText = "Invalid Google Drive link";
+  }
 }
 
 function addBook(){
