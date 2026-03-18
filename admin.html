@@ -11,24 +11,21 @@
       margin:0;
       padding:0;
     }
-
     header{
       background:#222;
       color:white;
       padding:20px;
       font-size:30px;
     }
-
     .admin-box{
       background:white;
       width:80%;
-      max-width:500px;
+      max-width:550px;
       margin:30px auto;
       padding:25px;
       border-radius:12px;
       box-shadow:0 0 10px rgba(0,0,0,0.15);
     }
-
     input, textarea{
       width:90%;
       padding:12px;
@@ -37,7 +34,6 @@
       border-radius:6px;
       font-size:16px;
     }
-
     button{
       padding:12px 18px;
       margin-top:10px;
@@ -48,12 +44,10 @@
       cursor:pointer;
       font-size:16px;
     }
-
     button:hover{
       background:#0056b3;
     }
-
-    #result{
+    #previewLink, #result{
       margin-top:20px;
       background:#eee;
       padding:15px;
@@ -64,28 +58,37 @@
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  📚 BooksCorner Admin Panel
-</header>
+<header>📚 BooksCorner Admin Panel</header>
 
 <div class="admin-box">
-  <h2>Add New Book</h2>
+  <h2>Convert Google Drive Code to Preview Link</h2>
+  <input id="fileCode" placeholder="Paste only Google Drive file code">
+  <button onclick="makePreview()">Make Preview Link</button>
+  <div id="previewLink"></div>
 
+  <hr style="margin:25px 0;">
+
+  <h2>Add New Book</h2>
   <input id="title" placeholder="Book Title">
   <input id="author" placeholder="Author">
   <input id="category" placeholder="Category">
-  <input id="link" placeholder="Google Drive Preview Link">
+  <input id="link" placeholder="Paste preview link here">
   <textarea id="desc" placeholder="Description"></textarea>
-
   <button onclick="addBook()">Generate Book Code</button>
 
   <div id="result"></div>
 </div>
 
 <script>
+function makePreview(){
+  let code = document.getElementById("fileCode").value.trim();
+  let preview = "https://drive.google.com/file/d/" + code + "/preview";
+  document.getElementById("previewLink").innerText = preview;
+  document.getElementById("link").value = preview;
+}
+
 function addBook(){
   let title = document.getElementById("title").value;
   let author = document.getElementById("author").value;
