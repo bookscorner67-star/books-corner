@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Register</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f2f2f2;
+text-align:center;
+padding-top:100px;
+}
+
+.box{
+background:white;
+width:320px;
+margin:auto;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px gray;
+}
+
+input{
+width:90%;
+padding:10px;
+margin:10px;
+}
+
+button{
+padding:10px 20px;
+background:green;
+color:white;
+border:none;
+border-radius:5px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Create Account</h2>
+
+<input id="user" placeholder="Username"><br>
+<input id="pass" type="password" placeholder="Password"><br>
+
+<button onclick="register()">Register</button>
+
+<p id="msg"></p>
+
+</div>
+
+<script>
+
+function register(){
+
+let u = document.getElementById("user").value
+let p = document.getElementById("pass").value
+
+let users = JSON.parse(localStorage.getItem("users")) || []
+
+users.push({user:u,pass:p})
+
+localStorage.setItem("users",JSON.stringify(users))
+
+document.getElementById("msg").innerText="Account Created"
+
+}
+
+</script>
+
+</body>
+</html>
