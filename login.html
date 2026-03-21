@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>BooksCorner Login</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f2f2f2;
+text-align:center;
+padding-top:100px;
+}
+
+.box{
+background:white;
+width:320px;
+margin:auto;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px gray;
+}
+
+input{
+width:90%;
+padding:10px;
+margin:10px;
+}
+
+button{
+padding:10px 20px;
+background:#007bff;
+color:white;
+border:none;
+border-radius:5px;
+margin:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>BooksCorner Login</h2>
+
+<input id="user" placeholder="Username"><br>
+<input id="pass" type="password" placeholder="Password"><br>
+
+<button onclick="login()">Login</button>
+
+<br>
+
+<a href="register.html">
+<button>Register</button>
+</a>
+
+<p id="msg"></p>
+
+</div>
+
+<script>
+
+function login(){
+
+let u = document.getElementById("user").value
+let p = document.getElementById("pass").value
+
+let users = JSON.parse(localStorage.getItem("users")) || []
+
+let found = users.find(x => x.user===u && x.pass===p)
+
+if(found){
+
+window.location.href="index.html"
+
+}else{
+
+document.getElementById("msg").innerText="Wrong login"
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
