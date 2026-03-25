@@ -1,136 +1,118 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>BooksCorner Admin</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body{
-      font-family:Arial, sans-serif;
-      background:#f2f2f2;
-      text-align:center;
-      margin:0;
-      padding:0;
-    }
+<title>BooksCorner Admin Panel</title>
 
-    header{
-      background:#222;
-      color:white;
-      padding:20px;
-      font-size:30px;
-    }
+<style>
 
-    .admin-box{
-      background:white;
-      width:80%;
-      max-width:600px;
-      margin:30px auto;
-      padding:25px;
-      border-radius:12px;
-      box-shadow:0 0 10px rgba(0,0,0,0.15);
-    }
+body{
+font-family: Arial;
+background:#f2f2f2;
+text-align:center;
+margin:0;
+}
 
-    input, textarea, select{
-      width:90%;
-      padding:12px;
-      margin:10px 0;
-      border:1px solid #ccc;
-      border-radius:6px;
-      font-size:16px;
-    }
+header{
+background:#222;
+color:white;
+padding:20px;
+font-size:30px;
+}
 
-    button{
-      padding:12px 18px;
-      margin-top:10px;
-      background:#007bff;
-      color:white;
-      border:none;
-      border-radius:6px;
-      cursor:pointer;
-      font-size:16px;
-    }
+input, select{
+padding:10px;
+width:300px;
+margin:10px;
+border-radius:5px;
+border:1px solid #ccc;
+}
 
-    button:hover{
-      background:#0056b3;
-    }
+button{
+padding:10px 20px;
+margin:10px;
+background:#007bff;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
 
-    #previewLink, #result{
-      margin-top:20px;
-      background:#eee;
-      padding:15px;
-      border-radius:8px;
-      text-align:left;
-      white-space:pre-wrap;
-      word-break:break-word;
-    }
-  </style>
+button:hover{
+background:#0056b3;
+}
+
+.result{
+background:white;
+padding:20px;
+margin:20px auto;
+width:60%;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+pre{
+text-align:left;
+background:#eee;
+padding:10px;
+overflow:auto;
+}
+
+</style>
+
 </head>
+
 <body>
 
-<header>📚 BooksCorner Admin Panel</header>
+<header>
+📚 BooksCorner Admin Panel
+</header>
 
-<div class="admin-box">
-  <h2>Convert Google Drive Link to Preview Link</h2>
-  <input id="driveLink" placeholder="Paste full Google Drive link here">
-  <button onclick="makePreview()">Convert to Preview</button>
-  <div id="previewLink"></div>
+<h2>Add New Book</h2>
 
-  <hr style="margin:25px 0;">
+<input type="text" id="title" placeholder="Book Name"><br>
 
-  <h2>Add New Book</h2>
-  <input id="title" placeholder="Book Title">
-  <input id="author" placeholder="Author">
+<input type="text" id="author" placeholder="Author Name"><br>
 
-  <select id="category">
-    <option value="">Select Category</option>
-    <option value="AI">AI</option>
-    <option value="Science">Science</option>
-    <option value="Math">Math</option>
-    <option value="Social">Social</option>
-    <option value="Story Books">Story Books</option>
-    <option value="Programming">Programming</option>
-    <option value="Electronics">Electronics</option>
-  </select>
+<select id="category">
+<option>AI</option>
+<option>Science</option>
+<option>Math</option>
+<option>Social</option>
+<option>Story Books</option>
+<option>Programming</option>
+<option>Electronics</option>
+</select><br>
 
-  <input id="link" placeholder="Preview link will come here">
-  <textarea id="desc" placeholder="Description"></textarea>
+<button onclick="generate()">Generate Code</button>
 
-  <button onclick="addBook()">Generate Book Code</button>
-
-  <div id="result"></div>
-</div>
+<div class="result" id="result"></div>
 
 <script>
-function makePreview(){
-  let fullLink = document.getElementById("driveLink").value.trim();
-  let match = fullLink.match(/\/d\/([a-zA-Z0-9_-]+)/);
 
-  if(match){
-    let fileId = match[1];
-    let preview = "https://drive.google.com/file/d/" + fileId + "/preview";
-    document.getElementById("previewLink").innerText = preview;
-    document.getElementById("link").value = preview;
-  } else {
-    document.getElementById("previewLink").innerText = "Invalid Google Drive link";
-  }
+function generate(){
+
+let title = document.getElementById("title").value;
+let author = document.getElementById("author").value;
+let category = document.getElementById("category").value;
+
+let filename = title.toLowerCase().replace(/ /g,"-") + ".pdf";
+
+let link = "books/" + filename;
+
+let code =
+`{
+"title": "${title}",
+"author": "${author}",
+"category": "${category}",
+"file": "${link}"
+},`;
+
+document.getElementById("result").innerHTML =
+"<h3>Copy this code and paste into books.json</h3><pre>"+code+"</pre>";
+
 }
 
-function addBook(){
-  let title = document.getElementById("title").value;
-  let author = document.getElementById("author").value;
-  let category = document.getElementById("category").value;
-  let link = document.getElementById("link").value;
-  let desc = document.getElementById("desc").value;
-
-  let code = `{
-  "title": "${title}",
-  "author": "${author}",
-  "category": "${category}",
-  "file": "${link}",
-  "description": "${desc}"
-}`;
-
-  document.getElementById("result").innerText = code;
-}
 </script>
 
 </body>
