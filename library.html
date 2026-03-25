@@ -91,7 +91,34 @@ If help needed contact:<br>
 let allBooks = [];
 
 
-fetch("books.json")
+<script>
+let sheetURL = "PASTE_YOUR_SHEET_CSV_LINK_HERE";
+
+fetch(sheetURL)
+.then(response => response.text())
+.then(data => {
+
+let rows = data.split("\n");
+let books = [];
+
+for(let i=1;i<rows.length;i++){
+
+let cols = rows[i].split(",");
+
+books.push({
+title: cols[0],
+author: cols[1],
+category: cols[2],
+file: cols[3],
+description: cols[4]
+});
+
+}
+
+displayBooks(books);
+
+});
+</script>
 .then(res => res.json())
 .then(data => {
 
