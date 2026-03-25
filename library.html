@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<title>BooksCorner</title>
+<title>BooksCorner Library</title>
 
 <style>
-
 body{
-font-family:Arial;
+font-family: Arial;
 background:#f2f2f2;
 text-align:center;
+margin:0;
 }
 
 header{
@@ -42,13 +41,18 @@ button:hover{
 background:#0056b3;
 }
 
+input{
+padding:10px;
+width:300px;
+margin:10px;
+}
+
 footer{
 margin-top:40px;
 background:#222;
 color:white;
 padding:20px;
 }
-
 </style>
 
 </head>
@@ -58,7 +62,6 @@ padding:20px;
 <header>
 📚 BooksCorner Library
 </header>
-
 
 <h2>Categories</h2>
 
@@ -74,65 +77,38 @@ padding:20px;
 <h2>Search Books</h2>
 
 <input type="text" id="searchBox" placeholder="Search book title..." onkeyup="searchBooks()">
-  
+
 <h2>Available Books</h2>
 
 <div id="library"></div>
-
 
 <footer>
 If help needed contact:<br>
 <b>bookscorner67@gmail.com</b>
 </footer>
 
-
 <script>
 
 let allBooks = [];
 
-
-<script>
-let sheetURL = "https://docs.google.com/spreadsheets/d/1lilb1ZCBa4H_iB62zbZ464gZAGew7uv2jtKG6Uyk6800/gviz/tq?tqx=out:csv";
-
-fetch(sheetURL)
-.then(response => response.text())
+fetch("books.json")
+.then(response => response.json())
 .then(data => {
-
-let rows = data.split("\n");
-let books = [];
-
-for(let i=1;i<rows.length;i++){
-
-let cols = rows[i].split(",");
-
-books.push({
-title: cols[0],
-author: cols[1],
-category: cols[2],
-file: cols[3],
-description: cols[4]
+allBooks = data;
+displayBooks(allBooks);
 });
-
-}
-
-displayBooks(books);
-
-});
-</script>
 
 function displayBooks(books){
 
 let area = document.getElementById("library");
-
 area.innerHTML = "";
 
 books.forEach(book => {
 
 area.innerHTML += `
 <div class="book">
-
 <h3>${book.title}</h3>
-
+<p><b>Author:</b> ${book.author}</p>
 <p><b>Category:</b> ${book.category}</p>
 
 <a href="${book.file}" target="_blank">
@@ -150,8 +126,6 @@ area.innerHTML += `
 
 }
 
-
-
 function filterBooks(category){
 
 if(category === "All"){
@@ -160,13 +134,23 @@ return;
 }
 
 let filtered = allBooks.filter(book => book.category === category);
+displayBooks(filtered);
+
+}
+
+function searchBooks(){
+
+let text = document.getElementById("searchBox").value.toLowerCase();
+
+let filtered = allBooks.filter(book =>
+book.title.toLowerCase().includes(text)
+);
 
 displayBooks(filtered);
 
 }
 
 </script>
-
 
 </body>
 </html>
