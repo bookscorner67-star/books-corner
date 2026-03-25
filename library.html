@@ -2,142 +2,138 @@
 <html>
 
 <head>
-<title>BooksCorner Library</title>
+  <title>BooksCorner Library</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f2f2f2;
+      text-align: center;
+      margin: 0;
+    }
 
-<style>
+    header {
+      background: #222;
+      color: white;
+      padding: 20px;
+      font-size: 30px;
+    }
 
-body{
-font-family:Arial;
-background:#f2f2f2;
-text-align:center;
-margin:0;
-}
+    .book {
+      background: white;
+      margin: 20px auto;
+      padding: 20px;
+      width: 60%;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
 
-header{
-background:#222;
-color:white;
-padding:20px;
-font-size:30px;
-}
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-.book{
-background:white;
-margin:20px auto;
-padding:20px;
-width:60%;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.2);
-}
+    button:hover {
+      background: #0056b3;
+    }
 
-button{
-padding:10px 15px;
-margin:5px;
-background:#007bff;
-color:white;
-border:none;
-border-radius:5px;
-cursor:pointer;
-}
+    footer {
+      margin-top: 40px;
+      background: #222;
+      color: white;
+      padding: 20px;
+    }
 
-button:hover{
-background:#0056b3;
-}
-
-footer{
-margin-top:40px;
-background:#222;
-color:white;
-padding:20px;
-}
-
-</style>
-
+    /* Ensure PDF iframe takes full width */
+    .pdf-viewer {
+      width: 100%;
+      height: 600px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-📚 BooksCorner Library
-</header>
+  <header>
+    📚 BooksCorner Library
+  </header>
 
-<h2>Categories</h2>
+  <h2>Categories</h2>
 
-<button onclick="filterBooks('AI')">AI</button>
-<button onclick="filterBooks('Science')">Science</button>
-<button onclick="filterBooks('Math')">Math</button>
-<button onclick="filterBooks('Social')">Social</button>
-<button onclick="filterBooks('Story Books')">Story Books</button>
-<button onclick="filterBooks('Programming')">Programming</button>
-<button onclick="filterBooks('Electronics')">Electronics</button>
-<button onclick="filterBooks('All')">All</button>
+  <button onclick="filterBooks('AI')">AI</button>
+  <button onclick="filterBooks('Science')">Science</button>
+  <button onclick="filterBooks('Math')">Math</button>
+  <button onclick="filterBooks('Social')">Social</button>
+  <button onclick="filterBooks('Story Books')">Story Books</button>
+  <button onclick="filterBooks('Programming')">Programming</button>
+  <button onclick="filterBooks('Electronics')">Electronics</button>
+  <button onclick="filterBooks('All')">All</button>
 
-<h2>Available Books</h2>
+  <h2>Available Books</h2>
 
-<div id="library"></div>
+  <div id="library"></div>
 
-<footer>
-If help needed contact:<br>
-<b>bookscorner67@gmail.com</b>
-</footer>
+  <!-- PDF Viewer -->
+  <iframe id="pdfViewer" class="pdf-viewer"></iframe>
 
-<script>
+  <footer>
+    If help needed contact:<br>
+    <b>bookscorner67@gmail.com</b>
+  </footer>
 
-let allBooks = [
+  <script>
+    let allBooks = [
+      {
+        "title": "Aurduino Book Expanded Edition",
+        "author": "Nabeel Ahmed",
+        "category": "Programming",
+        "file": "books/aurdino-book-expanded-edition.pdf"
+      }
+    ];
 
-{
-"title": "aurdino book expanded edition",
-"author": "nabeel ahmed",
-"category": "Programming",
-"file": "books/aurdino-book-expanded-edition.pdf"
-}
-];
+    displayBooks(allBooks);
 
-displayBooks(allBooks);
+    function displayBooks(books) {
+      let area = document.getElementById("library");
+      area.innerHTML = "";
 
-function displayBooks(books){
+      books.forEach(book => {
+        area.innerHTML += `
+          <div class="book">
+            <h3>${book.title}</h3>
+            <p><b>Category:</b> ${book.category}</p>
+            <button onclick="readOnline('${book.file}')">Read Online</button>
+            <a href="${book.file}" download>
+              <button>Download</button>
+            </a>
+          </div>
+        `;
+      });
+    }
 
-let area = document.getElementById("library");
+    function filterBooks(category) {
+      if (category === "All") {
+        displayBooks(allBooks);
+        return;
+      }
+      let filtered = allBooks.filter(book => book.category === category);
+      displayBooks(filtered);
+    }
 
-area.innerHTML = "";
-
-books.forEach(book => {
-
-area.innerHTML += `
-<div class="book">
-
-<h3>${book.title}</h3>
-
-<p><b>Category:</b> ${book.category}</p>
-
-<a href="${book.file}" target="_blank">
-<button>Read Online</button>
-</a>
-
-<a href="${book.file}" download>
-<button>Download</button>
-</a>
-
-</div>
-`;
-
-});
-
-}
-
-function filterBooks(category){
-
-if(category === "All"){
-displayBooks(allBooks);
-return;
-}
-
-let filtered = allBooks.filter(book => book.category === category);
-
-displayBooks(filtered);
-
-}
-
-</script>
+    function readOnline(filePath) {
+      let viewer = document.getElementById("pdfViewer");
+      viewer.src = filePath;
+      viewer.style.display = "block"; // Show iframe
+      viewer.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
 
 </body>
 </html>
