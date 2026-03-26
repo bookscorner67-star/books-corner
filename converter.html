@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>TXT to Word Converter</title>
+  <title>TXT to Word Converter (Full Pages)</title>
   <style>
     body {
       font-family: Arial;
-      background: #f2f2f2;
       text-align: center;
       padding: 50px;
+      background: #f2f2f2;
     }
-    input[type=file] {
+    input[type=file], button {
       margin: 20px 0;
       font-size: 16px;
     }
     button {
       padding: 10px 20px;
-      font-size: 16px;
       background: #007bff;
       color: white;
       border: none;
@@ -29,48 +28,58 @@
 </head>
 <body>
 
-  <h1>TXT File to Word Converter</h1>
+<h1>TXT to Word Converter (Full Page)</h1>
+<input type="file" id="txtFile" accept=".txt"><br>
+<button onclick="convertFile()">Convert to Word</button>
 
-  <input type="file" id="txtFile" accept=".txt"><br>
-  <button onclick="convertFile()">Convert to Word</button>
-
-  <script>
-    function convertFile() {
-      const fileInput = document.getElementById('txtFile');
-      if (!fileInput.files.length) {
+<script>
+function convertFile() {
+    const fileInput = document.getElementById('txtFile');
+    if (!fileInput.files.length) {
         alert("Please select a .txt file first!");
         return;
-      }
+    }
 
-      const file = fileInput.files[0];
-      const reader = new FileReader();
+    const file = fileInput.files[0];
+    const reader = new FileReader();
 
-      reader.onload = function(e) {
+    reader.onload = function(e) {
         const text = e.target.result;
 
-        // Wrap text in Word-compatible HTML
+        // Split TXT by page separators
+        const pages = text.split(/[-]{10,}/); // split wherever 10+ dashes
+
+        let bodyContent = '';
+        pages.forEach(page => {
+            if (page.trim() === '') return;
+            // Preserve line breaks
+            const pageContent = page.trim().split('\n').join('<br>');
+            // Add full-page break
+            bodyContent += `<div style="height:100%; width:100%; margin-bottom:0;">${pageContent}</div><div style="page-break-after: always;"></div>`;
+        });
+
+        // Word-compatible HTML
         const content = `
-          <html xmlns:o='urn:schemas-microsoft-com:office:office'
-                xmlns:w='urn:schemas-microsoft-com:office:word'
-                xmlns='http://www.w3.org/TR/REC-html40'>
-          <head><meta charset='utf-8'><title>Document</title></head>
-          <body>${text.replace(/\n/g, "<br>")}</body>
-          </html>
+            <html xmlns:o='urn:schemas-microsoft-com:office:office'
+                  xmlns:w='urn:schemas-microsoft-com:office:word'
+                  xmlns='http://www.w3.org/TR/REC-html40'>
+            <head><meta charset='utf-8'><title>Document</title></head>
+            <body>${bodyContent}</body>
+            </html>
         `;
 
         const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
-
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = file.name.replace(/\.txt$/i, ".doc");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      };
+    };
 
-      reader.readAsText(file);
-    }
-  </script>
+    reader.readAsText(file);
+}
+</script>
 
 </body>
 </html>
