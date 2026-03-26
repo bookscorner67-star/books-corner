@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>TXT Multi Downloader</title>
+<title>TXT to Word Batch Converter</title>
 
 <style>
 
@@ -16,7 +16,7 @@ padding:40px;
 button{
 padding:10px 20px;
 margin:10px;
-background:#007bff;
+background:#28a745;
 color:white;
 border:none;
 border-radius:5px;
@@ -24,7 +24,7 @@ cursor:pointer;
 }
 
 button:hover{
-background:#0056b3;
+background:#1e7e34;
 }
 
 .fileBox{
@@ -42,21 +42,24 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
 
 <body>
 
-<h1>📚 TXT Multi Downloader</h1>
-
-<p>Select many TXT files and download them normally</p>
+<h1>📚 TXT → Word Batch Converter</h1>
 
 <input type="file" id="files" multiple accept=".txt">
 
 <br><br>
 
-<button onclick="showFiles()">Load Files</button>
+<button onclick="convertFiles()">Convert to Word</button>
+<button onclick="downloadAll()">Download All</button>
 
 <div id="fileArea"></div>
 
 <script>
 
-function showFiles(){
+let downloadLinks = [];
+
+function convertFiles(){
+
+downloadLinks = [];
 
 let files=document.getElementById("files").files;
 let area=document.getElementById("fileArea");
@@ -66,22 +69,64 @@ area.innerHTML="";
 for(let i=0;i<files.length;i++){
 
 let file=files[i];
+let reader=new FileReader();
 
-let url=URL.createObjectURL(file);
+reader.onload=function(e){
+
+let text=e.target.result;
+
+let htmlContent = `
+<html>
+<body>
+<pre style="font-family:Calibri;font-size:16px;white-space:pre-wrap;">
+${text}
+</pre>
+</body>
+</html>
+`;
+
+let blob=new Blob(['\ufeff', htmlContent],{
+type:'application/msword'
+});
+
+let url=URL.createObjectURL(blob);
+
+let name=file.name.replace(".txt",".doc");
+
+downloadLinks.push({url:url,name:name});
 
 area.innerHTML+=`
 <div class="fileBox">
 
-<b>${file.name}</b>
+<b>${name}</b>
 
 <br><br>
 
-<a href="${url}" download="${file.name}">
+<a href="${url}" download="${name}">
 <button>Download</button>
 </a>
 
 </div>
 `;
+
+};
+
+reader.readAsText(file);
+
+}
+
+}
+
+function downloadAll(){
+
+for(let i=0;i<downloadLinks.length;i++){
+
+let a=document.createElement("a");
+a.href=downloadLinks[i].url;
+a.download=downloadLinks[i].name;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
 
 }
 
