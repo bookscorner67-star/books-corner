@@ -2,9 +2,10 @@
 <html>
 <head>
 
-<title>ZIP Books to PDF Converter</title>
+<title>ZIP TXT to PDF Converter</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
@@ -30,10 +31,6 @@ button:hover{
 background:#1e7e34;
 }
 
-button:disabled{
-background:gray;
-}
-
 .fileBox{
 background:white;
 padding:15px;
@@ -49,9 +46,7 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
 
 <body>
 
-<h1>📚 ZIP → PDF Books Converter</h1>
-
-<p>Select ZIP files containing TXT books</p>
+<h1>📚 ZIP → TXT → PDF Converter</h1>
 
 <input type="file" id="zipFiles" multiple accept=".zip">
 
@@ -67,12 +62,11 @@ Download All PDFs
 
 <script>
 
-let pdfLinks=[]
+let pdfFiles=[]
 
 async function processZips(){
 
-pdfLinks=[]
-
+pdfFiles=[]
 document.getElementById("fileArea").innerHTML=""
 document.getElementById("downloadBtn").disabled=true
 
@@ -88,22 +82,35 @@ if(filename.endsWith(".txt")){
 
 let txt=await zip.files[filename].async("string")
 
-let pdfHTML=`
-<html>
-<body style="font-family:Arial;white-space:pre-wrap;font-size:16px;">
-${txt}
-</body>
-</html>
-`
+const { jsPDF } = window.jspdf
+let doc = new jsPDF()
 
-let blob=new Blob([pdfHTML],{type:"application/pdf"})
-let url=URL.createObjectURL(blob)
+let lines = doc.splitTextToSize(txt,180)
+
+let y=10
+
+for(let i=0;i<lines.length;i++){
+
+if(y>280){
+doc.addPage()
+y=10
+}
+
+doc.text(lines[i],10,y)
+y+=7
+
+}
+
+let pdfBlob=doc.output("blob")
+
+let url=URL.createObjectURL(pdfBlob)
 
 let newName=filename.replace(".txt",".pdf")
 
-pdfLinks.push({url:url,name:newName})
+pdfFiles.push({url:url,name:newName})
 
 document.getElementById("fileArea").innerHTML+=`
+
 <div class="fileBox">
 
 <b>${newName}</b>
@@ -115,6 +122,7 @@ document.getElementById("fileArea").innerHTML+=`
 </a>
 
 </div>
+
 `
 
 }
@@ -125,13 +133,13 @@ document.getElementById("fileArea").innerHTML+=`
 
 document.getElementById("downloadBtn").disabled=false
 
-alert("All books converted to PDF!")
+alert("All books converted to real PDF!")
 
 }
 
 function downloadAll(){
 
-for(let f of pdfLinks){
+for(let f of pdfFiles){
 
 let a=document.createElement("a")
 
