@@ -1,36 +1,22 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+
 <title>BooksCorner Admin Panel</title>
 
 <style>
 
 body{
-font-family: Arial;
+font-family:Arial;
 background:#f2f2f2;
 text-align:center;
-margin:0;
-}
-
-header{
-background:#222;
-color:white;
-padding:20px;
-font-size:30px;
-}
-
-input, select{
-padding:10px;
-width:300px;
-margin:10px;
-border-radius:5px;
-border:1px solid #ccc;
+padding:40px;
 }
 
 button{
 padding:10px 20px;
 margin:10px;
+font-size:16px;
 background:#007bff;
 color:white;
 border:none;
@@ -42,20 +28,11 @@ button:hover{
 background:#0056b3;
 }
 
-.result{
-background:white;
-padding:20px;
-margin:20px auto;
-width:60%;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.2);
-}
-
-pre{
-text-align:left;
-background:#eee;
-padding:10px;
-overflow:auto;
+textarea{
+width:80%;
+height:300px;
+margin-top:20px;
+font-family:monospace;
 }
 
 </style>
@@ -64,52 +41,43 @@ overflow:auto;
 
 <body>
 
-<header>
-📚 BooksCorner Admin Panel
-</header>
+<h1>📚 BooksCorner Admin Panel</h1>
 
-<h2>Add New Book</h2>
+<p>Select many book files to generate JSON code</p>
 
-<input type="text" id="title" placeholder="Book Name"><br>
+<input type="file" id="files" multiple>
 
-<input type="text" id="author" placeholder="Author Name"><br>
+<br><br>
 
-<select id="category">
-<option>AI</option>
-<option>Science</option>
-<option>Math</option>
-<option>Social</option>
-<option>Story Books</option>
-<option>Programming</option>
-<option>Electronics</option>
-</select><br>
+<button onclick="generateJSON()">Generate JSON</button>
 
-<button onclick="generate()">Generate Code</button>
+<br>
 
-<div class="result" id="result"></div>
+<textarea id="output" placeholder="Generated JSON will appear here"></textarea>
 
 <script>
 
-function generate(){
+function generateJSON(){
 
-let title = document.getElementById("title").value;
-let author = document.getElementById("author").value;
-let category = document.getElementById("category").value;
+let files=document.getElementById("files").files
 
-let filename = title.toLowerCase().replace(/ /g,"-") + ".pdf";
+let books=[]
 
-let link = "books/" + filename;
+for(let file of files){
 
-let code =
-`{
-"title": "${title}",
-"author": "${author}",
-"category": "${category}",
-"file": "${link}"
-},`;
+let name=file.name.replace(/\.[^/.]+$/, "")
 
-document.getElementById("result").innerHTML =
-"<h3>Copy this code and paste into books.json</h3><pre>"+code+"</pre>";
+books.push({
+title:name,
+author:"Unknown",
+category:"General",
+file:"books/"+file.name
+})
+
+}
+
+document.getElementById("output").value=
+JSON.stringify(books,null,2)
 
 }
 
