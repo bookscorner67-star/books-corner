@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
-<title>ZIP TXT to PDF Converter</title>
+<title>ZIP TXT → PDF Converter</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -31,6 +32,11 @@ button:hover{
 background:#1e7e34;
 }
 
+button:disabled{
+background:gray;
+cursor:not-allowed;
+}
+
 .fileBox{
 background:white;
 padding:15px;
@@ -47,6 +53,8 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
 <body>
 
 <h1>📚 ZIP → TXT → PDF Converter</h1>
+
+<p>Select ZIP files containing TXT books</p>
 
 <input type="file" id="zipFiles" multiple accept=".zip">
 
@@ -67,6 +75,7 @@ let pdfFiles=[]
 async function processZips(){
 
 pdfFiles=[]
+
 document.getElementById("fileArea").innerHTML=""
 document.getElementById("downloadBtn").disabled=true
 
@@ -83,9 +92,10 @@ if(filename.endsWith(".txt")){
 let txt=await zip.files[filename].async("string")
 
 const { jsPDF } = window.jspdf
-let doc = new jsPDF()
 
-let lines = doc.splitTextToSize(txt,180)
+let doc=new jsPDF()
+
+let lines=doc.splitTextToSize(txt,180)
 
 let y=10
 
@@ -133,22 +143,24 @@ document.getElementById("fileArea").innerHTML+=`
 
 document.getElementById("downloadBtn").disabled=false
 
-alert("All books converted to real PDF!")
+alert("All books converted successfully!")
 
 }
 
-function downloadAll(){
+async function downloadAll(){
 
-for(let f of pdfFiles){
+for(let i=0;i<pdfFiles.length;i++){
 
 let a=document.createElement("a")
 
-a.href=f.url
-a.download=f.name
+a.href=pdfFiles[i].url
+a.download=pdfFiles[i].name
 
 document.body.appendChild(a)
 a.click()
 document.body.removeChild(a)
+
+await new Promise(r=>setTimeout(r,1000))
 
 }
 
@@ -157,4 +169,5 @@ document.body.removeChild(a)
 </script>
 
 </body>
+
 </html>
