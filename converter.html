@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>TXT to Word Batch Converter</title>
+<title>Super Book Tool</title>
 
 <style>
 
@@ -16,7 +16,8 @@ padding:40px;
 button{
 padding:10px 20px;
 margin:10px;
-background:#28a745;
+font-size:16px;
+background:#007bff;
 color:white;
 border:none;
 border-radius:5px;
@@ -24,7 +25,12 @@ cursor:pointer;
 }
 
 button:hover{
-background:#1e7e34;
+background:#0056b3;
+}
+
+button:disabled{
+background:gray;
+cursor:not-allowed;
 }
 
 .fileBox{
@@ -42,40 +48,55 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
 
 <body>
 
-<h1>📚 TXT → Word Batch Converter</h1>
+<h1>📚 Super Book Converter</h1>
+
+<p>Upload TXT books and convert to Word or PDF</p>
 
 <input type="file" id="files" multiple accept=".txt">
 
 <br><br>
 
-<button onclick="convertFiles()">Convert to Word</button>
-<button onclick="downloadAll()">Download All</button>
+<button onclick="convertFiles()">Convert Files</button>
+
+<button onclick="downloadAllWord()" id="wordAll" disabled>
+Download All Word
+</button>
+
+<button onclick="downloadAllPDF()" id="pdfAll" disabled>
+Download All PDF
+</button>
 
 <div id="fileArea"></div>
 
 <script>
 
-let downloadLinks = [];
+let wordLinks=[]
+let pdfLinks=[]
+let converted=0
+let total=0
 
 function convertFiles(){
 
-downloadLinks = [];
+wordLinks=[]
+pdfLinks=[]
+converted=0
 
-let files=document.getElementById("files").files;
-let area=document.getElementById("fileArea");
+let files=document.getElementById("files").files
+total=files.length
 
-area.innerHTML="";
+let area=document.getElementById("fileArea")
+area.innerHTML=""
 
-for(let i=0;i<files.length;i++){
+for(let file of files){
 
-let file=files[i];
-let reader=new FileReader();
+let reader=new FileReader()
 
 reader.onload=function(e){
 
-let text=e.target.result;
+let text=e.target.result
 
-let htmlContent = `
+// WORD FILE
+let wordHTML=`
 <html>
 <body>
 <pre style="font-family:Calibri;font-size:16px;white-space:pre-wrap;">
@@ -83,50 +104,92 @@ ${text}
 </pre>
 </body>
 </html>
-`;
+`
 
-let blob=new Blob(['\ufeff', htmlContent],{
-type:'application/msword'
-});
+let wordBlob=new Blob(['\ufeff',wordHTML],{type:'application/msword'})
+let wordURL=URL.createObjectURL(wordBlob)
+let wordName=file.name.replace(".txt",".doc")
 
-let url=URL.createObjectURL(blob);
+wordLinks.push({url:wordURL,name:wordName})
 
-let name=file.name.replace(".txt",".doc");
 
-downloadLinks.push({url:url,name:name});
+// PDF FILE (simple)
+let pdfHTML=`
+<html>
+<body style="font-family:Arial;white-space:pre-wrap;">
+${text}
+</body>
+</html>
+`
+
+let pdfBlob=new Blob([pdfHTML],{type:'application/pdf'})
+let pdfURL=URL.createObjectURL(pdfBlob)
+let pdfName=file.name.replace(".txt",".pdf")
+
+pdfLinks.push({url:pdfURL,name:pdfName})
 
 area.innerHTML+=`
 <div class="fileBox">
 
-<b>${name}</b>
+<b>${file.name}</b>
 
 <br><br>
 
-<a href="${url}" download="${name}">
-<button>Download</button>
+<a href="${wordURL}" download="${wordName}">
+<button>Download Word</button>
+</a>
+
+<a href="${pdfURL}" download="${pdfName}">
+<button>Download PDF</button>
 </a>
 
 </div>
-`;
+`
 
-};
+converted++
 
-reader.readAsText(file);
+if(converted===total){
+
+document.getElementById("wordAll").disabled=false
+document.getElementById("pdfAll").disabled=false
+
+alert("All books converted successfully!")
 
 }
 
 }
 
-function downloadAll(){
+reader.readAsText(file)
 
-for(let i=0;i<downloadLinks.length;i++){
+}
 
-let a=document.createElement("a");
-a.href=downloadLinks[i].url;
-a.download=downloadLinks[i].name;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
+}
+
+function downloadAllWord(){
+
+for(let f of wordLinks){
+
+let a=document.createElement("a")
+a.href=f.url
+a.download=f.name
+document.body.appendChild(a)
+a.click()
+document.body.removeChild(a)
+
+}
+
+}
+
+function downloadAllPDF(){
+
+for(let f of pdfLinks){
+
+let a=document.createElement("a")
+a.href=f.url
+a.download=f.name
+document.body.appendChild(a)
+a.click()
+document.body.removeChild(a)
 
 }
 
