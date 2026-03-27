@@ -2,7 +2,9 @@
 <html>
 <head>
 
-<title>Super Book Tool</title>
+<title>ZIP Books to PDF Converter</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <style>
 
@@ -17,7 +19,7 @@ button{
 padding:10px 20px;
 margin:10px;
 font-size:16px;
-background:#007bff;
+background:#28a745;
 color:white;
 border:none;
 border-radius:5px;
@@ -25,12 +27,11 @@ cursor:pointer;
 }
 
 button:hover{
-background:#0056b3;
+background:#1e7e34;
 }
 
 button:disabled{
 background:gray;
-cursor:not-allowed;
 }
 
 .fileBox{
@@ -48,145 +49,95 @@ box-shadow:0 0 5px rgba(0,0,0,0.2);
 
 <body>
 
-<h1>📚 Super Book Converter</h1>
+<h1>📚 ZIP → PDF Books Converter</h1>
 
-<p>Upload TXT books and convert to Word or PDF</p>
+<p>Select ZIP files containing TXT books</p>
 
-<input type="file" id="files" multiple accept=".txt">
+<input type="file" id="zipFiles" multiple accept=".zip">
 
 <br><br>
 
-<button onclick="convertFiles()">Convert Files</button>
+<button onclick="processZips()">Convert Books</button>
 
-<button onclick="downloadAllWord()" id="wordAll" disabled>
-Download All Word
-</button>
-
-<button onclick="downloadAllPDF()" id="pdfAll" disabled>
-Download All PDF
+<button onclick="downloadAll()" id="downloadBtn" disabled>
+Download All PDFs
 </button>
 
 <div id="fileArea"></div>
 
 <script>
 
-let wordLinks=[]
 let pdfLinks=[]
-let converted=0
-let total=0
 
-function convertFiles(){
+async function processZips(){
 
-wordLinks=[]
 pdfLinks=[]
-converted=0
 
-let files=document.getElementById("files").files
-total=files.length
+document.getElementById("fileArea").innerHTML=""
+document.getElementById("downloadBtn").disabled=true
 
-let area=document.getElementById("fileArea")
-area.innerHTML=""
+let files=document.getElementById("zipFiles").files
 
 for(let file of files){
 
-let reader=new FileReader()
+let zip=await JSZip.loadAsync(file)
 
-reader.onload=function(e){
+for(let filename in zip.files){
 
-let text=e.target.result
+if(filename.endsWith(".txt")){
 
-// WORD FILE
-let wordHTML=`
-<html>
-<body>
-<pre style="font-family:Calibri;font-size:16px;white-space:pre-wrap;">
-${text}
-</pre>
-</body>
-</html>
-`
+let txt=await zip.files[filename].async("string")
 
-let wordBlob=new Blob(['\ufeff',wordHTML],{type:'application/msword'})
-let wordURL=URL.createObjectURL(wordBlob)
-let wordName=file.name.replace(".txt",".doc")
-
-wordLinks.push({url:wordURL,name:wordName})
-
-
-// PDF FILE (simple)
 let pdfHTML=`
 <html>
-<body style="font-family:Arial;white-space:pre-wrap;">
-${text}
+<body style="font-family:Arial;white-space:pre-wrap;font-size:16px;">
+${txt}
 </body>
 </html>
 `
 
-let pdfBlob=new Blob([pdfHTML],{type:'application/pdf'})
-let pdfURL=URL.createObjectURL(pdfBlob)
-let pdfName=file.name.replace(".txt",".pdf")
+let blob=new Blob([pdfHTML],{type:"application/pdf"})
+let url=URL.createObjectURL(blob)
 
-pdfLinks.push({url:pdfURL,name:pdfName})
+let newName=filename.replace(".txt",".pdf")
 
-area.innerHTML+=`
+pdfLinks.push({url:url,name:newName})
+
+document.getElementById("fileArea").innerHTML+=`
 <div class="fileBox">
 
-<b>${file.name}</b>
+<b>${newName}</b>
 
 <br><br>
 
-<a href="${wordURL}" download="${wordName}">
-<button>Download Word</button>
-</a>
-
-<a href="${pdfURL}" download="${pdfName}">
-<button>Download PDF</button>
+<a href="${url}" download="${newName}">
+<button>Download</button>
 </a>
 
 </div>
 `
 
-converted++
-
-if(converted===total){
-
-document.getElementById("wordAll").disabled=false
-document.getElementById("pdfAll").disabled=false
-
-alert("All books converted successfully!")
+}
 
 }
 
 }
 
-reader.readAsText(file)
+document.getElementById("downloadBtn").disabled=false
+
+alert("All books converted to PDF!")
 
 }
 
-}
-
-function downloadAllWord(){
-
-for(let f of wordLinks){
-
-let a=document.createElement("a")
-a.href=f.url
-a.download=f.name
-document.body.appendChild(a)
-a.click()
-document.body.removeChild(a)
-
-}
-
-}
-
-function downloadAllPDF(){
+function downloadAll(){
 
 for(let f of pdfLinks){
 
 let a=document.createElement("a")
+
 a.href=f.url
 a.download=f.name
+
 document.body.appendChild(a)
 a.click()
 document.body.removeChild(a)
