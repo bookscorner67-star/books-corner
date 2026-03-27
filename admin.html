@@ -35,6 +35,12 @@ margin-top:20px;
 font-family:monospace;
 }
 
+input, select{
+padding:8px;
+margin:5px;
+font-size:14px;
+}
+
 </style>
 
 </head>
@@ -43,9 +49,30 @@ font-family:monospace;
 
 <h1>📚 BooksCorner Admin Panel</h1>
 
-<p>Select many book files to generate JSON code</p>
+<p>Add books and generate JSON for the library</p>
+
+<br>
 
 <input type="file" id="files" multiple>
+
+<br><br>
+
+<label>Author Name:</label>
+<input type="text" id="author" placeholder="Enter author">
+
+<br><br>
+
+<label>Category:</label>
+
+<select id="category">
+<option value="AI">AI</option>
+<option value="Science">Science</option>
+<option value="Math">Math</option>
+<option value="Programming">Programming</option>
+<option value="Electronics">Electronics</option>
+<option value="Social">Social</option>
+<option value="Story Books">Story Books</option>
+</select>
 
 <br><br>
 
@@ -60,6 +87,8 @@ font-family:monospace;
 function generateJSON(){
 
 let files=document.getElementById("files").files
+let author=document.getElementById("author").value
+let category=document.getElementById("category").value
 
 let books=[]
 
@@ -69,8 +98,8 @@ let name=file.name.replace(/\.[^/.]+$/, "")
 
 books.push({
 title:name,
-author:"Unknown",
-category:"General",
+author:author,
+category:category,
 file:"books/"+file.name
 })
 
