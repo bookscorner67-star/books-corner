@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>BooksCorner Library</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+margin:0;
+text-align:center;
+}
+
+header{
+background:#222;
+color:white;
+padding:20px;
+font-size:30px;
+}
+
+.searchbox{
+margin:20px;
+}
+
+input{
+padding:10px;
+width:300px;
+}
+
+.categories button{
+padding:10px;
+margin:5px;
+border:none;
+background:#007bff;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+.categories button:hover{
+background:#0056b3;
+}
+
+#library{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.book{
+background:white;
+width:250px;
+margin:15px;
+padding:15px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.book h3{
+font-size:18px;
+}
+
+.book button{
+padding:8px 12px;
+margin:5px;
+border:none;
+background:#28a745;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+.book button:hover{
+background:#1e7e34;
+}
+
+footer{
+margin-top:40px;
+background:#222;
+color:white;
+padding:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+📚 BooksCorner Digital Library
+</header>
+
+<div class="searchbox">
+<input type="text" id="searchBox" placeholder="Search books..." onkeyup="searchBooks()">
+</div>
+
+<div class="categories">
+
+<button onclick="filterBooks('All')">All</button>
+<button onclick="filterBooks('AI')">AI</button>
+<button onclick="filterBooks('Science')">Science</button>
+<button onclick="filterBooks('Math')">Math</button>
+<button onclick="filterBooks('Programming')">Programming</button>
+<button onclick="filterBooks('Story')">Story</button>
+
+</div>
+
+<div id="library"></div>
+
+<footer>
+Contact: bookscorner67@gmail.com
+</footer>
+
+<script>
+
+let allBooks = [
+
+
+
+];
+
+displayBooks(allBooks);
+
+function displayBooks(books){
+
+let library = document.getElementById("library");
+
+library.innerHTML = "";
+
+books.forEach(book => {
+
+library.innerHTML += `
+<div class="book">
+
+<h3>${book.title}</h3>
+
+<p>${book.category}</p>
+
+<a href="${book.file}" target="_blank">
+<button>Read Online</button>
+</a>
+
+<a href="${book.file}" download>
+<button>Download</button>
+</a>
+
+</div>
+`;
+
+});
+
+}
+
+function filterBooks(category){
+
+if(category === "All"){
+displayBooks(allBooks);
+return;
+}
+
+let filtered = allBooks.filter(book => book.category === category);
+
+displayBooks(filtered);
+
+}
+
+function searchBooks(){
+
+let text = document.getElementById("searchBox").value.toLowerCase();
+
+let filtered = allBooks.filter(book =>
+book.title.toLowerCase().includes(text)
+);
+
+displayBooks(filtered);
+
+}
+
+</script>
+
+</body>
+
+</html>
