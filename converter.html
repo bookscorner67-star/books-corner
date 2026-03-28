@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+<title>TXT / ZIP to PDF Converter</title>
 
-<title>ZIP TXT → PDF Converter</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <style>
-
 body{
-font-family:Arial;
+font-family: Arial;
 background:#f2f2f2;
 text-align:center;
 padding:40px;
 }
 
 button{
-padding:10px 20px;
+padding:12px 20px;
 margin:10px;
 font-size:16px;
-background:#28a745;
+background:#007bff;
 color:white;
 border:none;
 border-radius:5px;
@@ -29,145 +26,182 @@ cursor:pointer;
 }
 
 button:hover{
-background:#1e7e34;
+background:#0056b3;
 }
 
-button:disabled{
-background:gray;
-cursor:not-allowed;
+#progressContainer{
+width:80%;
+height:25px;
+background:#ddd;
+margin:auto;
+border-radius:10px;
+overflow:hidden;
 }
 
-.fileBox{
-background:white;
-padding:15px;
-margin:10px auto;
-width:60%;
-border-radius:8px;
-box-shadow:0 0 5px rgba(0,0,0,0.2);
+#progressBar{
+height:100%;
+width:0%;
+background:#28a745;
 }
-
 </style>
-
 </head>
 
 <body>
 
-<h1>📚 ZIP → TXT → PDF Converter</h1>
+<h2>TXT / ZIP → PDF Book Converter</h2>
 
-<p>Select ZIP files containing TXT books</p>
-
-<input type="file" id="zipFiles" multiple accept=".zip">
+<input type="file" id="files" multiple>
 
 <br><br>
 
-<button onclick="processZips()">Convert Books</button>
+<button onclick="startConvert()">Start Convert</button>
+<button onclick="downloadAll()">Download All</button>
 
-<button onclick="downloadAll()" id="downloadBtn" disabled>
-Download All PDFs
-</button>
+<br><br>
 
-<div id="fileArea"></div>
+<div id="progressContainer">
+<div id="progressBar"></div>
+</div>
+
+<br>
+
+<p id="status">Waiting...</p>
 
 <script>
 
+let books=[]
 let pdfFiles=[]
 
-async function processZips(){
+function sleep(ms){
+return new Promise(resolve=>setTimeout(resolve,ms))
+}
 
+async function startConvert(){
+
+books=[]
 pdfFiles=[]
-
-document.getElementById("fileArea").innerHTML=""
-document.getElementById("downloadBtn").disabled=true
-
-let files=document.getElementById("zipFiles").files
-
-for(let file of files){
-
-let zip=await JSZip.loadAsync(file)
-
-for(let filename in zip.files){
-
-if(filename.endsWith(".txt")){
-
-let txt=await zip.files[filename].async("string")
 
 const { jsPDF } = window.jspdf
 
+let files=document.getElementById("files").files
+
+if(files.length==0){
+alert("Select files first")
+return
+}
+
+document.getElementById("status").innerText="Reading files..."
+
+for(let file of files){
+
+if(file.name.endsWith(".txt")){
+
+let text=await file.text()
+books.push({name:file.name,text:text})
+
+}
+
+else if(file.name.endsWith(".zip")){
+
+let zip=await JSZip.loadAsync(file)
+
+for(let name in zip.files){
+
+if(name.endsWith(".txt")){
+
+let text=await zip.files[name].async("string")
+books.push({name:name,text:text})
+
+}
+
+}
+
+}
+
+}
+
+let total=books.length
+document.getElementById("status").innerText="Books found: "+total
+
+for(let i=0;i<total;i++){
+
+let book=books[i]
+
 let doc=new jsPDF()
 
-let lines=doc.splitTextToSize(txt,180)
+let lines=doc.splitTextToSize(book.text,180)
 
 let y=10
 
-for(let i=0;i<lines.length;i++){
+for(let line of lines){
 
 if(y>280){
 doc.addPage()
 y=10
 }
 
-doc.text(lines[i],10,y)
+doc.text(line,10,y)
 y+=7
 
 }
 
-let pdfBlob=doc.output("blob")
+let blob=doc.output("blob")
 
-let url=URL.createObjectURL(pdfBlob)
+pdfFiles.push({
+name:book.name.replace(".txt",".pdf"),
+blob:blob
+})
 
-let newName=filename.replace(".txt",".pdf")
+let percent=Math.floor(((i+1)/total)*100)
 
-pdfFiles.push({url:url,name:newName})
+document.getElementById("progressBar").style.width=percent+"%"
 
-document.getElementById("fileArea").innerHTML+=`
+document.getElementById("status").innerText =
+"Converted "+(i+1)+" / "+total+" books ("+percent+"%)"
 
-<div class="fileBox">
-
-<b>${newName}</b>
-
-<br><br>
-
-<a href="${url}" download="${newName}">
-<button>Download</button>
-</a>
-
-</div>
-
-`
+await sleep(50)
 
 }
 
-}
-
-}
-
-document.getElementById("downloadBtn").disabled=false
-
-alert("All books converted successfully!")
+document.getElementById("status").innerText="Conversion finished"
 
 }
 
 async function downloadAll(){
 
+if(pdfFiles.length==0){
+alert("Convert books first")
+return
+}
+
+document.getElementById("status").innerText="Downloading..."
+
 for(let i=0;i<pdfFiles.length;i++){
+
+let pdf=pdfFiles[i]
+
+let url=URL.createObjectURL(pdf.blob)
 
 let a=document.createElement("a")
 
-a.href=pdfFiles[i].url
-a.download=pdfFiles[i].name
+a.href=url
+a.download=pdf.name
 
 document.body.appendChild(a)
+
 a.click()
+
 document.body.removeChild(a)
 
-await new Promise(r=>setTimeout(r,1000))
+await sleep(3000)
 
 }
+
+document.getElementById("status").innerText="All downloads finished"
 
 }
 
 </script>
 
 </body>
-
 </html>
