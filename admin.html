@@ -1,78 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <title>BooksCorner Admin Panel</title>
 
 <style>
-
 body{
 font-family:Arial;
-background:#f2f2f2;
+background:#111;
+color:white;
 text-align:center;
 padding:40px;
 }
 
-button{
-padding:10px 20px;
-margin:10px;
-font-size:16px;
-background:#007bff;
-color:white;
-border:none;
-border-radius:5px;
-cursor:pointer;
-}
-
-button:hover{
-background:#0056b3;
-}
-
 textarea{
-width:80%;
+width:90%;
 height:300px;
 margin-top:20px;
-font-family:monospace;
 }
-
-input, select{
-padding:8px;
-margin:5px;
-font-size:14px;
-}
-
 </style>
-
 </head>
 
 <body>
 
-<h1>📚 BooksCorner Admin Panel</h1>
+<h1>BooksCorner Admin Panel</h1>
 
-<p>Add books and generate JSON for the library</p>
-
-<br>
-
-<input type="file" id="files" multiple>
-
-<br><br>
-
-<label>Author Name:</label>
-<input type="text" id="author" placeholder="Enter author">
-
-<br><br>
-
-<label>Category:</label>
-
-<select id="category">
-<option value="AI">AI</option>
-<option value="Science">Science</option>
-<option value="Math">Math</option>
-<option value="Programming">Programming</option>
-<option value="Electronics">Electronics</option>
-<option value="Social">Social</option>
-<option value="Story Books">Story Books</option>
-</select>
+<input type="file" id="files" multiple accept=".pdf">
 
 <br><br>
 
@@ -80,32 +32,56 @@ font-size:14px;
 
 <br>
 
-<textarea id="output" placeholder="Generated JSON will appear here"></textarea>
+<textarea id="output"></textarea>
 
 <script>
+
+function detectCategory(name){
+
+name=name.toLowerCase()
+
+if(name.includes("ai") || name.includes("artificial"))
+return "AI"
+
+if(name.includes("science"))
+return "Science"
+
+if(name.includes("social"))
+return "Social"
+
+if(name.includes("story") || name.includes("adventure"))
+return "Story Books"
+
+if(name.includes("programming") || name.includes("python") || name.includes("code"))
+return "Programming"
+
+if(name.includes("electronics") || name.includes("circuit"))
+return "Electronics"
+
+return "Science"
+}
 
 function generateJSON(){
 
 let files=document.getElementById("files").files
-let author=document.getElementById("author").value
-let category=document.getElementById("category").value
-
 let books=[]
 
-for(let file of files){
+for(let i=0;i<files.length;i++){
 
-let name=file.name.replace(/\.[^/.]+$/, "")
+let title=files[i].name.replace(".pdf","")
+
+let category=detectCategory(title)
 
 books.push({
-title:name,
-author:author,
+title:title,
+author:"Unknown",
 category:category,
-file:"books/"+file.name
+file:"books/"+files[i].name
 })
 
 }
 
-document.getElementById("output").value=
+document.getElementById("output").value =
 JSON.stringify(books,null,2)
 
 }
