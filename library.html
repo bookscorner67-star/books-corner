@@ -1,58 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>BooksCorner Library</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+}
+
+h1{
+margin-top:20px;
+}
+
+#search{
+width:60%;
+padding:10px;
+font-size:16px;
+margin:20px;
+}
+
+.filters button{
+padding:10px 15px;
+margin:5px;
+border:none;
+background:#2563eb;
+color:white;
+cursor:pointer;
+}
+
+.filters button:hover{
+background:#1e40af;
+}
+
+#books{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:20px;
+padding:20px;
+}
+
+.book{
+background:#1e293b;
+padding:15px;
+border-radius:10px;
+}
+
+.book a{
+color:#38bdf8;
+text-decoration:none;
+}
+
+.book a:hover{
+text-decoration:underline;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>📚 BooksCorner Library</h1>
+
+<input id="search" placeholder="Search books...">
+
+<div class="filters">
+
+<button onclick="filterBooks('All')">All</button>
+<button onclick="filterBooks('AI')">AI</button>
+<button onclick="filterBooks('Science')">Science</button>
+<button onclick="filterBooks('Social')">Social</button>
+<button onclick="filterBooks('Story Books')">Story Books</button>
+<button onclick="filterBooks('Programming')">Programming</button>
+<button onclick="filterBooks('Electronics')">Electronics</button>
+
+</div>
+
+<div id="books"></div>
+
 <script>
 
-let allBooks = []; 
-let currentCategory = "All";
+let allBooks=[]
+let currentCategory="All"
 
 fetch("books.json")
-.then(res => res.json())
-.then(data => {
-    allBooks = data;
-    displayBooks(allBooks);
-});
+.then(res=>res.json())
+.then(data=>{
+allBooks=data
+displayBooks(data)
+})
 
 function displayBooks(books){
-    const container = document.getElementById("books");
-    container.innerHTML = "";
 
-    books.forEach(book => {
+let container=document.getElementById("books")
+container.innerHTML=""
 
-        const div = document.createElement("div");
-        div.className = "book";
+books.forEach(book=>{
 
-        div.innerHTML = `
-        <h3>${book.title}</h3>
-        <p>${book.author}</p>
-        <p>${book.category}</p>
-        <a href="${book.file}" target="_blank">Open Book</a>
-        `;
+let div=document.createElement("div")
+div.className="book"
 
-        container.appendChild(div);
+div.innerHTML=`
+<h3>${book.title}</h3>
+<p>${book.author}</p>
+<p>${book.category}</p>
+<a href="${book.file}" target="_blank">Open Book</a>
+`
 
-    });
+container.appendChild(div)
+
+})
+
 }
 
 function filterBooks(category){
-    currentCategory = category;
 
-    if(category === "All"){
-        displayBooks(allBooks);
-    }else{
-        const filtered = allBooks.filter(b => b.category === category);
-        displayBooks(filtered);
-    }
+currentCategory=category
+applyFilters()
+
 }
 
-document.getElementById("search").addEventListener("input", function(){
+document.getElementById("search").addEventListener("input",applyFilters)
 
-    const text = this.value.toLowerCase();
+function applyFilters(){
 
-    const filtered = allBooks.filter(book =>
-        book.title.toLowerCase().includes(text) ||
-        book.author.toLowerCase().includes(text)
-    );
+let search=document.getElementById("search").value.toLowerCase()
 
-    displayBooks(filtered);
+let filtered=allBooks.filter(book=>{
 
-});
+let matchCategory=currentCategory==="All" || book.category===currentCategory
+
+let matchSearch=book.title.toLowerCase().includes(search)
+
+return matchCategory && matchSearch
+
+})
+
+displayBooks(filtered)
+
+}
 
 </script>
+
+</body>
+
+</html>
